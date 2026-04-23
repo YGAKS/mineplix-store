@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MINEPLIX | Premier Minecraft Architecture & Digital Design Studio</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+
+    <style>
+        :root {
+            --bg-dark: #0f0f12;
+            --surface: #1a1a1e;
+            --accent-primary: #c3f25d; 
+            --accent-secondary: #ff8e9e; 
+            --accent-tertiary: #7d6aff; 
+            --text-main: #ffffff;
+            --text-dim: #b0b0b0;
+            --spring-easing: cubic-bezier(0.4, 0, 0.2, 1);
+            --bounce-easing: cubic-bezier(0.68, -0.6, 0.32, 1.6);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            overflow-x: hidden;
+            user-select: none;
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s var(--spring-easing);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        nav {
+            position: fixed;
+            top: 0; width: 100%;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(18px);
+            background: rgba(15, 15, 18, 0.8);
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 1.5rem;
+            letter-spacing: -1px;
+            color: var(--accent-primary);
+        }
+
+        .nav-desktop {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-desktop a {
+            text-decoration: none;
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: 0.3s;
+            opacity: 0.7;
+        }
+
+        .nav-desktop a:hover { opacity: 1; color: var(--accent-primary); }
+
+        .burger-btn {
+            background: none;
+            border: none;
+            color: white;
+            width: 54px; height: 54px;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.5s var(--spring-easing);
+            z-index: 10001;
+            position: relative;
+        }
+
+        .burger-btn.active {
+            background: var(--bg-dark) !important;
+            color: var(--accent-primary) !important;
+            transform: rotate(180deg);
+        }
+
+        .fs-menu {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100vh;
+            background: var(--accent-primary);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            clip-path: circle(0% at calc(100% - 67px) 52px);
+            transition: clip-path 0.8s var(--spring-easing);
+            pointer-events: none;
+        }
+
+        .fs-menu.open { 
+            clip-path: circle(150% at calc(100% - 67px) 52px); 
+            pointer-events: all;
+        }
+
+        .fs-menu ul { list-style: none; text-align: center; }
+        .fs-menu ul li { margin: 10px 0; opacity: 0; transform: translateY(20px); transition: 0.4s; }
+        .fs-menu.open ul li { opacity: 1; transform: translateY(0); transition-delay: 0.3s; }
+        
+        .fs-menu ul li a {
+            font-size: clamp(2.5rem, 8vw, 4rem);
+            font-weight: 800;
+            color: var(--bg-dark);
+            text-decoration: none;
+            display: inline-block;
+            padding: 5px 30px;
+            border-radius: 100px;
+            transition: 0.3s;
+            letter-spacing: -2px;
+        }
+
+        .fs-menu ul li a:hover {
+            background-color: var(--bg-dark);
+            color: var(--accent-primary);
+        }
+
+        .close-circle-btn {
+            margin-top: 40px;
+            width: 64px;
+            height: 64px;
+            background: var(--bg-dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-primary);
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.5s var(--bounce-easing);
+        }
+
+        .fs-menu.open .close-circle-btn {
+            opacity: 1;
+            transform: scale(1);
+            transition-delay: 0.6s;
+        }
+
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 0 10%;
+            background: 
+                linear-gradient(to bottom, rgba(15, 15, 18, 0.8) 0%, rgba(15, 15, 18, 0.95) 100%),
+                url('https://netherixstudios.com/wp-content/uploads/2025/02/Build-minecraft-homepage-netherix.webp');
+            background-size: cover;
+            background-position: center;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: clamp(3rem, 10vw, 6.5rem);
+            font-weight: 800;
+            line-height: 0.95;
+            margin-bottom: 25px;
+            letter-spacing: 1px;
+        }
+
+        .hero h1 span { color: var(--accent-primary); }
+
+        .hero-btns {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn-vibrant {
+            background: var(--accent-primary);
+            color: var(--bg-dark);
+            padding: 22px 48px;
+            border-radius: 100px;
+            font-weight: 800;
+            text-decoration: none;
+            width: fit-content;
+            transition: all 0.4s var(--bounce-easing);
+            display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+        }
+
+        .btn-outline {
+            background: rgba(15, 15, 18, 0.5); /* Sedikit transparan agar blend dengan BG */
+            color: var(--text-main);
+            border: 2px solid var(--accent-primary);
+            padding: 22px 48px;
+            border-radius: 100px;
+            font-weight: 800;
+            text-decoration: none;
+            width: fit-content;
+            transition: all 0.4s var(--bounce-easing);
+            display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+            backdrop-filter: blur(5px);
+        }
+
+        .btn-vibrant:hover, .btn-outline:hover { transform: scale(0.98) }
+        .btn-outline:hover { background: var(--accent-primary); color: var(--bg-dark); }
+
+        .section { padding: 120px 10%; }
+        
+        .section-header { margin-bottom: 60px; text-align: center; }
+        .section-header h2 { margin-top: 10px; font-size: 3.5rem; font-weight: 800; letter-spacing: -2px; }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .product-card {
+            background: var(--surface);
+            border-radius: 30px;
+            overflow: hidden;
+            position: relative;
+            transition: all 0.5s var(--spring-easing);
+            border: 1px solid rgba(255,255,255,0.03);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-img {
+            height: 220px;
+            background: linear-gradient(180deg, #252529 0%, var(--surface) 100%);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.5s;
+        }
+
+        .product-details { 
+            padding: 30px; 
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .product-details h3 { font-size: 1.5rem; margin-bottom: 8px; font-weight: 800; letter-spacing: -1px; }
+        
+        .btn-catalog {
+            background: var(--accent-primary);
+            color: var(--bg-dark);
+            padding: 18px 30px;
+            border-radius: 100px;
+            font-weight: 800;
+            text-decoration: none;
+            transition: all 0.4s var(--bounce-easing);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.8rem;
+            margin-top: auto;
+            width: 100%;
+        }
+
+        .btn-catalog:hover { transform: scale(0.97); opacity: 0.9; }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 80px;
+            align-items: start;
+            margin: 10px;
+        }
+
+        .about-sidebar {
+            position: sticky;
+            top: 120px;
+        }
+
+        .about-title {
+            font-size: clamp(2.8rem, 6vw, 4.8rem);
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 30px;
+        }
+
+        .about-stats {
+            display: flex;
+            gap: 40px;
+        }
+
+        .stat-item h4 { font-size: 2rem; color: var(--accent-primary); font-weight: 800; }
+        .stat-item p { font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+
+        .about-content p {
+            font-size: clamp(1.1rem, 2vw, 1.4rem);
+            line-height: 1.6;
+            color: var(--text-dim);
+            margin-bottom: 25px;
+            font-weight: 400;
+        }
+
+        .about-content p b {
+            color: var(--text-main);
+            font-weight: 700;
+        }
+
+        .highlight-text {
+            font-size: 1.8rem;
+            color: var(--accent-primary);
+            font-weight: 800;
+            margin-bottom: 20px;
+            display: block;
+            letter-spacing: -1px;
+        }
+
+        .faq-item {
+            background: var(--surface);
+            margin-bottom: 15px;
+            border-radius: 25px;
+        }
+        .faq-q { padding: 25px 30px; display: flex; justify-content: space-between; font-weight: 600; }
+        .faq-a { padding: 0 30px; max-height: 0; overflow: hidden; transition: 0.5s var(--spring-easing); color: var(--text-dim); line-height: 1.6; }
+        .faq-item.active .faq-a { padding-bottom: 25px; max-height: 300px; }
+
+        footer {
+            padding: 80px 10% 40px;
+            background: var(--accent-primary);
+            color: var(--bg-dark);
+            margin-top: 60px;
+        }
+
+        .footer-minimal {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 40px;
+        }
+
+        .footer-links { display: flex; gap: 60px; }
+        .footer-link-group ul { list-style: none; }
+        .footer-link-group ul li { margin-bottom: 12px; }
+        .footer-link-group ul li a {
+            color: var(--bg-dark);
+            text-decoration: none;
+            font-size: 0.9rem;
+            opacity: 0.7;
+            transition: 0.3s;
+            font-weight: 600;
+        }
+        .footer-link-group ul li a:hover { opacity: 1; text-decoration: underline; }
+
+        @media (max-width: 1024px) {
+            .nav-desktop { display: none; }
+            .burger-btn { display: flex; }
+            .about-grid { grid-template-columns: 1fr; gap: 40px; }
+            .about-sidebar { position: static; }
+        }
+
+        @media (max-width: 768px) {
+            nav { padding: 20px; }
+            .section { padding: 80px 20px; }
+            .footer-links { gap: 30px; width: 100%; justify-content: space-between; }
+            .fs-menu { clip-path: circle(0% at calc(100% - 47px) 47px); }
+            .fs-menu.open { clip-path: circle(150% at calc(100% - 47px) 47px); }
+            .about-stats { gap: 20px; justify-content: space-between; }
+
+            .product-grid {
+                display: flex;
+                overflow-x: auto;
+                scroll-snap-type: x mandatory;
+                gap: 15px;
+                padding: 10px 0 30px;
+                scrollbar-width: none;
+            }
+
+            .product-grid::-webkit-scrollbar {
+                display: none;
+            }
+
+            .product-card {
+                min-width: 85%;
+                scroll-snap-align: center;
+            }
+            
+            .section-header { text-align: left; }
+            .section-header h2 { font-size: 2.8rem; }
+            .hero-btns { flex-direction: column; }
+            .btn-vibrant, .btn-outline { width: 100%; text-align: center; }
+            
+            .hero {
+                background: 
+                    linear-gradient(to bottom, rgba(15, 15, 18, 0.8) 0%, rgba(15, 15, 18, 0.9) 100%),
+                    url('https://netherixstudios.com/wp-content/uploads/2025/02/Build-minecraft-homepage-netherix.webp');
+                background-size: cover;
+                background-position: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">MINEPLIX.</div>
+        
+        <ul class="nav-desktop">
+            <li><a href="#about">ABOUT</a></li>
+            <li><a href="#products">CATEGORY</a></li>
+            <li><a href="#faq">BANTUAN</a></li>
+        </ul>
+
+        <button class="burger-btn" id="burgerBtn">
+            <span class="material-symbols-rounded" id="burgerIcon">menu</span>
+        </button>
+    </nav>
+
+    <div class="fs-menu" id="fsMenu">
+        <ul>
+            <li><a href="#about">ABOUT</a></li>
+            <li><a href="#products">CATEGORY</a></li>
+            <li><a href="#faq">BANTUAN</a></li>
+        </ul>
+
+        <div class="close-circle-btn" id="closeCircle">
+            <span class="material-symbols-rounded" style="font-size: 32px; font-weight: 800;">close</span>
+        </div>
+    </div>
+
+    <section class="hero" id="home">
+        <h1 class="reveal">CRAFTING<br><span>IMMERSIVE</span> REALMS.</h1>
+        <p class="reveal" style="color: var(--text-dim); margin-bottom: 40px; max-width: 650px; font-size: 1.2rem; line-height: 1.6; text-shadow: 0 2px 10px rgba(0,0,0,0.8);">
+            MINEPLIX adalah studio kreatif garis depan yang menggabungkan arsitektur voxel tingkat lanjut dengan desain visual modern. Kami mengubah server Anda menjadi sebuah dunia yang memiliki jiwa.
+        </p>
+        <div class="hero-btns reveal">
+            <a href="/porto.html" class="btn-vibrant">Portofolio</a>
+            <a href="/hireus.html" class="btn-outline">Hire Us</a>
+        </div>
+    </section>
+
+    <section class="section" id="about">
+        <div class="about-grid">
+            <div class="about-sidebar">
+                <h2 class="about-title reveal">LEVELING UP<br>VOXEL ART.</h2>
+                <div class="about-stats reveal">
+                    <div class="stat-item">
+                        <h4>120+</h4>
+                        <p>Projects</p>
+                    </div>
+                    <div class="stat-item">
+                        <h4>8ms</h4>
+                        <p>Lag Free</p>
+                    </div>
+                    <div class="stat-item">
+                        <h4>TOP</h4>
+                        <p>Quality</p>
+                    </div>
+                </div>
+            </div>
+            <div class="about-content">
+                <span class="highlight-text reveal">Evolusi Kreativitas.</span>
+                <p class="reveal">
+                    Di <b>MINEPLIX</b>, kami memahami bahwa sebuah server bukan hanya tempat bermain, melainkan sebuah ekosistem visual. Tim kami terdiri dari para ahli <b>World-Building</b> yang mampu menciptakan atmosfer yang hidup melalui pencahayaan, tekstur, dan komposisi ruang.
+                </p>
+                <p class="reveal">
+                    Layanan kami mencakup pembuatan <b>Lobby Premium</b>, Map RPG yang luas, hingga integrasi <b>Custom 3D Entity</b>. Bagi kami, batas hanyalah apa yang belum kita bayangkan.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="products">
+        <div class="section-header reveal">
+            <h2>STORE CATEGORY</h2>
+            <p style="color: var(--text-dim); margin-top: 10px;">Layanan profesional untuk kebutuhan digital Anda.</p>
+        </div>
+        
+        <div class="product-grid">
+            <div class="product-card reveal">
+                <div class="product-img">
+                    <span class="material-symbols-rounded" style="font-size: 60px; opacity: 0.1;">fort</span>
+                </div>
+                <div class="product-details">
+                    <h3>Minecraft Builder</h3>
+                    <p style="color: var(--text-dim); font-size: 0.85rem; margin-bottom: 25px;">Lobby, Spawns, RPG Maps, & Terraforming tingkat tinggi.</p>
+                    <a href="produk.html#builder" class="btn-catalog">
+                        Lihat Katalog <span class="material-symbols-rounded">arrow_forward</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="product-card reveal">
+                <div class="product-img">
+                    <span class="material-symbols-rounded" style="font-size: 60px; opacity: 0.1;">brush</span>
+                </div>
+                <div class="product-details">
+                    <h3>2D & Pixel Art</h3>
+                    <p style="color: var(--text-dim); font-size: 0.85rem; margin-bottom: 25px;">Custom UI/UX, Server Logo, & Pixelated Items/Textures.</p>
+                    <a href="produk.html#design" class="btn-catalog">
+                        Lihat Katalog <span class="material-symbols-rounded">arrow_forward</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="product-card reveal">
+                <div class="product-img">
+                    <span class="material-symbols-rounded" style="font-size: 60px; opacity: 0.1;">view_in_ar</span>
+                </div>
+                <div class="product-details">
+                    <h3>3D Modeling</h3>
+                    <p style="color: var(--text-dim); font-size: 0.85rem; margin-bottom: 25px;">Custom Entity, Furniture, & Assets untuk Java/Bedrock.</p>
+                    <a href="produk.html#3dmodeling" class="btn-catalog">
+                        Lihat Katalog <span class="material-symbols-rounded">arrow_forward</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="faq">
+        <h2 class="reveal" style="font-size: 3.5rem; margin-bottom: 60px; text-align: center; font-weight: 800; letter-spacing: -2px;">Panduan & Pertanyaan</h2>
+        <div class="faq-container reveal" style="max-width: 900px; margin: 0 auto;">
+            <div class="faq-item">
+                <div class="faq-q">Apa perbedaan paket 'Custom Build'? <span class="material-symbols-rounded">add</span></div>
+                <div class="faq-a">Custom Build dirancang eksklusif hanya untuk Anda sesuai permintaan spesifik, sementara Ready-to-Use adalah katalog map non-eksklusif.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q">Apakah model 3D support Bedrock? <span class="material-symbols-rounded">add</span></div>
+                <div class="faq-a">Ya, model 3D kami dioptimalkan untuk Java Edition maupun Bedrock Edition.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q">Bagaimana sistem pembayarannya? <span class="material-symbols-rounded">add</span></div>
+                <div class="faq-a">Kami menggunakan sistem DP 50% di awal dan pelunasan dilakukan setelah hasil final divalidasi oleh klien.</div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-minimal reveal">
+            <div class="footer-brand">
+                <h2 style="color: var(--bg-dark);">MINEPLIX.</h2>
+                <p style="font-size: 0.85rem; margin-top: 10px;">Architects of the Voxel World.</p>
+                <p style="font-size: 0.75rem; margin-top: 5px;">&copy; 2024 MINEPLIX Studio.</p>
+            </div>
+            <div class="footer-links">
+                <div class="footer-link-group">
+                    <h4 style="margin-bottom: 15px; font-size: 1rem;">About more</h4>
+                    <ul>
+                        <li><a href="porto.html">Portofolio</a></li>
+                        <li><a href="wiki.html">Informasi layanan tos</a></li>
+                    </ul>
+                </div>
+                <div class="footer-link-group">
+                    <h4 style="margin-bottom: 15px; font-size: 1rem;">Media</h4>
+                    <ul>
+                        <li><a href="https://discord.gg/SUqrcFYyYE">Discord</a></li>
+                        <li><a href="https://www.instagram.com/mineplix.id?igsh=d2pxeHRlb3NmYzE=">Instagram</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const burgerBtn = document.getElementById('burgerBtn');
+        const fsMenu = document.getElementById('fsMenu');
+        const burgerIcon = document.getElementById('burgerIcon');
+        const closeCircle = document.getElementById('closeCircle');
+
+        function toggleMenu() {
+            const isOpen = fsMenu.classList.toggle('open');
+            burgerBtn.classList.toggle('active');
+            burgerIcon.textContent = isOpen ? 'close' : 'menu';
+            document.body.style.overflow = isOpen ? 'hidden' : 'auto';
+        }
+
+        burgerBtn.addEventListener('click', toggleMenu);
+        closeCircle.addEventListener('click', toggleMenu);
+
+        document.querySelectorAll('.fs-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                if(fsMenu.classList.contains('open')) toggleMenu();
+            });
+        });
+
+        document.querySelectorAll('.faq-q').forEach(q => {
+            q.addEventListener('click', () => {
+                const item = q.parentElement;
+                const isActive = item.classList.contains('active');
+                
+                document.querySelectorAll('.faq-item').forEach(el => el.classList.remove('active'));
+                document.querySelectorAll('.faq-q .material-symbols-rounded').forEach(el => el.textContent = 'add');
+
+                if (!isActive) {
+                    item.classList.add('active');
+                    q.querySelector('.material-symbols-rounded').textContent = 'remove';
+                }
+            });
+        });
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>

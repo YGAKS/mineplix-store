@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MINEPLIX | PORTOFOLIO</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+
+    <style>
+        :root {
+            --bg-dark: #0f0f12;
+            --surface: #1a1a1e;
+            --accent-primary: #c3f25d; 
+            --accent-secondary: #ff8e9e; 
+            --accent-tertiary: #7d6aff; 
+            --text-main: #ffffff;
+            --text-dim: #b0b0b0;
+            --spring-easing: cubic-bezier(0.4, 0, 0.2, 1);
+            --bounce-easing: cubic-bezier(0.68, -0.6, 0.32, 1.6);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            overflow-x: hidden;
+            user-select: none;
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s var(--spring-easing);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        nav {
+            position: fixed;
+            top: 0; width: 100%;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(18px);
+            background: rgba(15, 15, 18, 0.8);
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 1.5rem;
+            letter-spacing: -1px;
+            color: var(--accent-primary);
+        }
+
+        .nav-desktop {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-desktop a {
+            text-decoration: none;
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: 0.3s;
+            opacity: 0.7;
+        }
+
+        .nav-desktop a:hover { opacity: 1; color: var(--accent-primary); }
+
+        .burger-btn {
+            background: none;
+            border: none;
+            color: white;
+            width: 54px; height: 54px;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.5s var(--spring-easing);
+            z-index: 10001;
+            position: relative;
+        }
+
+        .burger-btn.active {
+            background: var(--bg-dark) !important;
+            color: var(--accent-primary) !important;
+            transform: rotate(180deg);
+        }
+
+        .fs-menu {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100vh;
+            background: var(--accent-primary);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            clip-path: circle(0% at calc(100% - 67px) 52px);
+            transition: clip-path 0.8s var(--spring-easing);
+            pointer-events: none;
+        }
+
+        .fs-menu.open { 
+            clip-path: circle(150% at calc(100% - 67px) 52px); 
+            pointer-events: all;
+        }
+
+        .fs-menu ul { list-style: none; text-align: center; }
+        .fs-menu ul li { margin: 10px 0; opacity: 0; transform: translateY(20px); transition: 0.4s; }
+        .fs-menu.open ul li { opacity: 1; transform: translateY(0); transition-delay: 0.3s; }
+        
+        .fs-menu ul li a {
+            font-size: clamp(2.5rem, 8vw, 4rem);
+            font-weight: 800;
+            color: var(--bg-dark);
+            text-decoration: none;
+            display: inline-block;
+            padding: 5px 30px;
+            border-radius: 100px;
+            transition: 0.3s;
+            letter-spacing: -2px;
+        }
+
+        .fs-menu ul li a:hover {
+            background-color: var(--bg-dark);
+            color: var(--accent-primary);
+        }
+
+        .close-circle-btn {
+            margin-top: 40px;
+            width: 64px;
+            height: 64px;
+            background: var(--bg-dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-primary);
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.5s var(--bounce-easing);
+        }
+
+        .fs-menu.open .close-circle-btn {
+            opacity: 1;
+            transform: scale(1);
+            transition-delay: 0.6s;
+        }
+
+        section {
+            padding: 120px 10% 60px;
+            min-height: auto;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 5vw, 2.5rem);
+            font-weight: 800;
+            margin-bottom: 40px;
+            letter-spacing: -1.5px;
+            text-align: center;
+        }
+
+        .section-title span { color: var(--accent-primary); }
+
+        .order-container {
+            background: var(--surface);
+            padding: 40px;
+            border-radius: 32px;
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 40px;
+            border: 1px solid rgba(255,255,255,0.05);
+            position: relative;
+            overflow: visible; /* Diubah agar dropdown tidak terpotong */
+            align-items: stretch;
+        }
+
+        .order-form { z-index: 2; }
+
+        .input-group { margin-bottom: 20px; position: relative; }
+        .input-group label { display: block; font-weight: 700; margin-bottom: 10px; color: var(--accent-primary); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .input-group input {
+            width: 100%;
+            padding: 18px 24px;
+            background: #25252b;
+            border: 2px solid transparent;
+            border-radius: 24px;
+            color: white;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .input-group input:focus { border-color: var(--accent-primary); outline: none; background: #2a2a30; }
+
+        /* Custom Dropdown Styling */
+        .custom-dropdown {
+            position: relative;
+            width: 100%;
+        }
+
+        .dropdown-selected {
+            width: 100%;
+            padding: 18px 24px;
+            background: #25252b;
+            border-radius: 24px;
+            color: white;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 2px solid transparent;
+            transition: 0.3s;
+        }
+
+        .dropdown-selected:hover { background: #2a2a30; border-color: rgba(195, 242, 93, 0.3); }
+        .dropdown-selected.active { border-color: var(--accent-primary); }
+
+        .dropdown-options {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            width: 100%;
+            background: #25252b;
+            border-radius: 20px;
+            overflow: hidden;
+            display: none;
+            z-index: 100;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .dropdown-options.show { display: block; animation: slideDown 0.3s var(--spring-easing); }
+
+        .dropdown-option {
+            padding: 15px 24px;
+            color: var(--text-dim);
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .dropdown-option:hover { background: var(--accent-primary); color: var(--bg-dark); }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dimensions { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+
+        .btn-hire {
+            width: 100%;
+            padding: 22px;
+            background: var(--accent-primary);
+            color: var(--bg-dark);
+            border: none;
+            border-radius: 28px;
+            font-weight: 800;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: 0.4s var(--bounce-easing);
+        }
+
+        .btn-hire:hover { transform: translateY(-5px); }
+
+        .order-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-left: 20px;
+        }
+
+        .info-card {
+            background: rgba(255,255,255,0.03);
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 15px;
+        }
+
+        .info-card h4 { font-size: 0.9rem; margin-bottom: 5px; color: var(--text-main); }
+        .info-card p { font-size: 0.8rem; color: var(--text-dim); line-height: 1.5; }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            transition: 0.5s ease;
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: 28px;
+            overflow: hidden;
+            border: 2px solid rgba(255,255,255,0.05);
+            transition: 0.4s var(--spring-easing);
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card:hover { transform: translateY(-12px); border-color: var(--accent-primary); }
+
+        .card-img {
+            width: 100%; height: 220px;
+            background: #25252b;
+            position: relative;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .card-tag {
+            position: absolute;
+            top: 15px; left: 15px;
+            background: rgba(15, 15, 18, 0.7);
+            padding: 6px 14px;
+            border-radius: 100px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: var(--accent-primary);
+            text-transform: uppercase;
+            backdrop-filter: blur(5px);
+        }
+
+        .card-content { padding: 30px; }
+        .card-price { color: var(--accent-primary); font-weight: 800; font-size: 1.4rem; margin-bottom: 5px; }
+        .card-title { font-weight: 800; font-size: 1.1rem; margin-bottom: 12px; }
+        
+        .card-meta { 
+            display: flex; 
+            gap: 15px; 
+            margin-bottom: 25px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .meta-item { display: flex; align-items: center; gap: 5px; color: var(--text-dim); font-size: 0.75rem; font-weight: 600; }
+        .meta-item span { font-size: 16px; color: var(--accent-primary); }
+
+        .btn-buy {
+            width: 100%;
+            padding: 16px;
+            background: transparent;
+            border: 2px solid var(--accent-primary);
+            color: var(--accent-primary);
+            border-radius: 28px;
+            font-weight: 800;
+            transition: 0.3s;
+            letter-spacing: 1px;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+        }
+
+        .btn-buy:hover { background: var(--accent-primary); color: var(--bg-dark); }
+
+        footer {
+            padding: 80px 10% 40px;
+            background: var(--accent-primary);
+            color: var(--bg-dark);
+            margin-top: 60px;
+        }
+
+        .footer-minimal {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 40px;
+        }
+
+        .footer-links { display: flex; gap: 60px; }
+        .footer-link-group ul { list-style: none; }
+        .footer-link-group ul li { margin-bottom: 12px; }
+        .footer-link-group ul li a {
+            color: var(--bg-dark);
+            text-decoration: none;
+            font-size: 0.9rem;
+            opacity: 0.7;
+            transition: 0.3s;
+            font-weight: 600;
+        }
+        .footer-link-group ul li a:hover { opacity: 1; text-decoration: underline; }
+
+        /* Empty State */
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 32px;
+            border: 1px dashed rgba(255,255,255,0.1);
+        }
+
+        @media (max-width: 1024px) {
+            .nav-desktop { display: none; }
+            .burger-btn { display: flex; }
+            .order-container { grid-template-columns: 1fr; padding: 30px; }
+            .order-info { border-left: none; border-top: 1px solid rgba(255,255,255,0.1); padding-left: 0; padding-top: 30px; }
+            section { padding: 100px 6% 40px; }
+        }
+        
+         @media (max-width: 768px) {
+            nav { padding: 20px; }
+            .section { padding: 80px 20px; }
+            .footer-links { gap: 30px; width: 100%; justify-content: space-between; }
+            .fs-menu { clip-path: circle(0% at calc(100% - 47px) 47px); }
+            .fs-menu.open { clip-path: circle(150% at calc(100% - 47px) 47px); }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">MINEPLIX.</div>
+        <ul class="nav-desktop">
+            <li><a href="#builder">BUILDER</a></li>
+            <li><a href="#design">DESIGN ART</a></li>
+            <li><a href="#3dmodeling">3D MODELING</a></li>
+        </ul>
+        <button class="burger-btn" id="burgerBtn">
+            <span class="material-symbols-rounded" id="burgerIcon">menu</span>
+        </button>
+    </nav>
+
+    <div class="fs-menu" id="fsMenu">
+        <ul>
+            <li><a href="#builder" class="fs-link">BUILDER</a></li>
+            <li><a href="#design" class="fs-link">DESIGN ART</a></li>
+            <li><a href="#3dmodeling" class="fs-link">3D MODELING</a></li>
+        </ul>
+        <div class="close-circle-btn" id="closeCircle">
+            <span class="material-symbols-rounded" style="font-size: 32px; font-weight: 800;">close</span>
+        </div>
+    </div>
+
+    <section id="main-section" class="reveal active">
+        <h2 class="section-title" id="dynamic-title">CUSTOM <span>BUILD.</span></h2>
+        <div class="order-container" id="custom-card-content"></div>
+    </section>
+
+    <section id="produck" class="reveal active">
+        <h2 class="section-title">READY <span>STOCK.</span></h2>
+        <div class="product-grid" id="productGrid"></div>
+    </section>
+
+    <footer>
+        <div class="footer-minimal reveal active">
+            <div class="footer-brand">
+                <h2 style="color: var(--bg-dark);">MINEPLIX.</h2>
+                <p style="font-size: 0.85rem; margin-top: 10px;">Architects of the Voxel World.</p>
+                <p style="font-size: 0.75rem; margin-top: 5px;">&copy; 2024 MINEPLIX Studio.</p>
+            </div>
+            <div class="footer-links">
+                <div class="footer-link-group">
+                    <h4 style="margin-bottom: 15px; font-size: 1rem;">About more</h4>
+                    <ul>
+                        <li><a href="porto.html">Portofolio</a></li>
+                        <li><a href="wiki.html">Informasi layanan tos</a></li>
+                    </ul>
+                </div>
+                <div class="footer-link-group">
+                    <h4 style="margin-bottom: 15px; font-size: 1rem;">Media</h4>
+                    <ul>
+                        <li><a href="https://discord.gg/SUqrcFYyYE">Discord</a></li>
+                        <li><a href="https://www.instagram.com/mineplix.id?igsh=d2pxeHRlb3NmYzE=">Instagram</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const burgerBtn = document.getElementById('burgerBtn');
+        const fsMenu = document.getElementById('fsMenu');
+        const burgerIcon = document.getElementById('burgerIcon');
+        const closeCircle = document.getElementById('closeCircle');
+        const fsLinks = document.querySelectorAll('.fs-link');
+
+        function toggleMenu() {
+            const isOpen = fsMenu.classList.toggle('open');
+            burgerBtn.classList.toggle('active');
+            burgerIcon.textContent = isOpen ? 'close' : 'menu';
+            document.body.style.overflow = isOpen ? 'hidden' : 'auto';
+        }
+
+        burgerBtn.addEventListener('click', toggleMenu);
+        closeCircle.addEventListener('click', toggleMenu);
+        fsLinks.forEach(link => link.addEventListener('click', () => fsMenu.classList.contains('open') && toggleMenu()));
+
+        const pageConfigs = {
+            '#builder': { title: 'CUSTOM <span>BUILD.</span>', json: 'produk.json', formType: 'builder' },
+            '#design': { title: 'CUSTOM <span>DESIGN.</span>', json: 'produk2.json', formType: 'design' },
+            '#3dmodeling': { title: '3D <span>MODELING.</span>', json: 'produk3.json', formType: '3d' }
+        };
+
+        // Logic for Custom Dropdown
+        function initDropdown() {
+            const selected = document.querySelector('.dropdown-selected');
+            const options = document.querySelector('.dropdown-options');
+            if(!selected) return;
+
+            selected.addEventListener('click', (e) => {
+                e.stopPropagation();
+                options.classList.toggle('show');
+                selected.classList.toggle('active');
+            });
+
+            document.querySelectorAll('.dropdown-option').forEach(opt => {
+                opt.addEventListener('click', () => {
+                    const text = opt.innerText;
+                    const value = opt.getAttribute('data-value');
+                    document.getElementById('in1').value = value;
+                    selected.querySelector('span').innerText = text;
+                    options.classList.remove('show');
+                    selected.classList.remove('active');
+                });
+            });
+
+            window.addEventListener('click', () => {
+                options.classList.remove('show');
+                selected.classList.remove('active');
+            });
+        }
+
+        function getFormHTML(type) {
+            if (type === 'builder') {
+                return `
+                <div class="order-form">
+                    <div class="input-group"><label>Tema Project</label><input type="text" id="in1_text" placeholder="Medieval, Lobby, RPG Map..."></div>
+                    <div class="dimensions">
+                        <div class="input-group"><label>Luas (Blocks)</label><input type="number" id="in2" placeholder="150"></div>
+                        <div class="input-group"><label>Tinggi (Max)</label><input type="number" id="in3" placeholder="80"></div>
+                    </div>
+                    <button class="btn-hire" onclick="sendWA('Builder')"><span class="material-symbols-rounded">construction</span>Sewa Jasa</button>
+                </div>
+                <div class="order-info">
+                    <div class="info-card"><h4>Fast Delivery</h4><p>Pengerjaan 3-7 hari sesuai tingkat kerumitan.</p></div>
+                    <div class="info-card"><h4>Professional Team</h4><p>Dikerjakan oleh builder berpengalaman.</p></div>
+                </div>`;
+            } else if (type === 'design') {
+                return `
+                <div class="order-form">
+                    <input type="hidden" id="in1" value="Pixel Art">
+                    <div class="input-group">
+                        <label>Pilihan Jasa</label>
+                        <div class="custom-dropdown">
+                            <div class="dropdown-selected"><span>Pixel Art</span> <span class="material-symbols-rounded">expand_more</span></div>
+                            <div class="dropdown-options">
+                                <div class="dropdown-option" data-value="Pixel Art">Pixel Art</div>
+                                <div class="dropdown-option" data-value="Logo Server">Logo Server</div>
+                                <div class="dropdown-option" data-value="Banner / Poster">Banner / Poster</div>
+                                <div class="dropdown-option" data-value="UI/UX Minecraft">UI/UX Minecraft</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-group"><label>Tema / Konsep</label><input type="text" id="in2" placeholder="Fantasy, Dark, Minimalist..."></div>
+                    <button class="btn-hire" onclick="sendWA('Design Art')"><span class="material-symbols-rounded">palette</span>Pesan Design</button>
+                </div>
+                <div class="order-info">
+                    <div class="info-card"><h4>High Res</h4><p>Hasil akhir dengan kualitas tajam & HD.</p></div>
+                    <div class="info-card"><h4>Custom Style</h4><p>Desain unik sesuai request branding lo.</p></div>
+                </div>`;
+            } else {
+                return `
+                <div class="order-form">
+                    <input type="hidden" id="in1" value="Custom Item">
+                    <div class="input-group">
+                        <label>Jenis Model</label>
+                        <div class="custom-dropdown">
+                            <div class="dropdown-selected"><span>Custom Item</span> <span class="material-symbols-rounded">expand_more</span></div>
+                            <div class="dropdown-options">
+                                <div class="dropdown-option" data-value="Custom Item">Custom Item (Sword/Tool)</div>
+                                <div class="dropdown-option" data-value="Custom Block">Custom Block</div>
+                                <div class="dropdown-option" data-value="Entity / Mob Model">Entity / Mob Model</div>
+                                <div class="dropdown-option" data-value="Armor Set">Armor Set</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-group"><label>Tema Model</label><input type="text" id="in2" placeholder="Mecha, Organic, Magic..."></div>
+                    <button class="btn-hire" onclick="sendWA('3D Modeling')"><span class="material-symbols-rounded">3d_rotation</span>Pesan 3D Model</button>
+                </div>
+                <div class="order-info">
+                    <div class="info-card"><h4>Ready to Use</h4><p>Format .json atau .java yang siap pasang.</p></div>
+                    <div class="info-card"><h4>Low Poly</h4><p>Model dioptimasi agar tidak lag di server.</p></div>
+                </div>`;
+            }
+        }
+
+        function sendWA(cat) {
+            const val1 = document.getElementById('in1')?.value || document.getElementById('in1_text')?.value;
+            const val2 = document.getElementById('in2')?.value || '';
+            const val3 = document.getElementById('in3')?.value || '';
+            let msg = `Halo Mineplix, saya ingin pesan Custom ${cat}:%0A- Jenis/Tema: ${val1}`;
+            if(val2) msg += `%0A- Detail/Luas: ${val2}`;
+            if(val3) msg += `%0A- Tinggi: ${val3}`;
+            window.open(`https://wa.me/6285117674287?text=${msg}`, '_blank');
+        }
+
+        async function fetchProducts(file) {
+            const grid = document.getElementById('productGrid');
+            try {
+                const response = await fetch(file);
+                if (!response.ok) throw new Error();
+                const data = await response.json();
+                
+                if (!data || data.length === 0) {
+                    showEmptyState();
+                    return;
+                }
+
+                grid.innerHTML = '';
+                data.forEach(item => {
+                    grid.innerHTML += `
+                        <div class="card">
+                            <div class="card-img" style="background-image: url('${item.img}');"><div class="card-tag">${item.kategori}</div></div>
+                            <div class="card-content">
+                                <p class="card-price">${item.harga}</p>
+                                <h3 class="card-title">${item.nama}</h3>
+                                <div class="card-meta">
+                                    <div class="meta-item"><span class="material-symbols-rounded">grid_view</span> ${item.luas || 'N/A'}</div>
+                                    <div class="meta-item"><span class="material-symbols-rounded">layers</span> ${item.versi || 'N/A'}</div>
+                                </div>
+                                <a href="https://wa.me/6285117674287?text=Halo%20Mineplix,%20saya%20tertarik%20membeli%20${encodeURIComponent(item.nama)}" class="btn-buy">BUY NOW</a>
+                            </div>
+                        </div>`;
+                });
+            } catch (e) {
+                showEmptyState();
+            }
+        }
+
+        function showEmptyState() {
+            document.getElementById('productGrid').innerHTML = `
+                <div class="empty-state">
+                    <span class="material-symbols-rounded" style="font-size: 48px; color: var(--accent-primary); opacity: 0.5;">inventory_2</span>
+                    <h3 style="margin-top: 15px; font-weight: 800;">MAAF, STOK SEDANG TIDAK TERSEDIA</h3>
+                    <p style="color: var(--text-dim); font-size: 0.9rem;">Cek kembali nanti atau hubungi kami via Discord/WA.</p>
+                </div>`;
+        }
+
+        function updateContent() {
+            const hash = window.location.hash || '#builder';
+            const config = pageConfigs[hash] || pageConfigs['#builder'];
+            document.getElementById('dynamic-title').innerHTML = config.title;
+            document.getElementById('custom-card-content').innerHTML = getFormHTML(config.formType);
+            initDropdown();
+            fetchProducts(config.json);
+        }
+
+        window.addEventListener('hashchange', updateContent);
+        window.addEventListener('load', updateContent);
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>

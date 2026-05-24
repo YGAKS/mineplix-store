@@ -1117,7 +1117,7 @@
         let lastSubmitTime = 0;
 
         document.addEventListener("DOMContentLoaded", () => {
-            fetch("products.json")
+            fetch("data/builder.json")
                 .then(response => {
                     if (!response.ok) {
                         throw new Error("Gagal mengambil file json produk.");

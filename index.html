@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MINEPLIX | Premier Minecraft Architecture & Digital Design Studio</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+
+    <style>
+        :root {
+            --bg-dark: #0f0f12;
+            --surface: #1a1a1e;
+            --accent-primary: #c3f25d; 
+            --accent-secondary: #ff8e9e; 
+            --accent-tertiary: #7d6aff; 
+            --text-main: #ffffff;
+            --text-dim: #b0b0b0;
+            --spring-easing: cubic-bezier(0.4, 0, 0.2, 1);
+            --bounce-easing: cubic-bezier(0.68, -0.6, 0.32, 1.6);
+            --nav-bg: #c3f25d;
+            --nav-text: #0f0f12;
+            --nav-text-hover: #ffffff;
+            --nav-btn-bg: rgba(15, 15, 18, 0.08);
+            --nav-btn-hover: rgba(15, 15, 18, 0.2);
+            --nav-border: rgba(195, 242, 93, 0.2);
+            --hero-overlay-start: rgba(15, 15, 18, 0.8);
+            --hero-overlay-end: rgba(15, 15, 18, 0.95);
+            --btn-outline-bg: rgba(15, 15, 18, 0.5);
+            --card-border: rgba(255, 255, 255, 0.03);
+            --card-img-start: #252529;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            overflow-x: hidden;
+            user-select: none;
+        }
+
+        button {
+            border: none;
+            outline: none;
+        }
+
+        button:focus {
+            border: none;
+            outline: none;
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s var(--spring-easing);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        nav {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 40px);
+            max-width: 1300px;
+            height: 76px;
+            padding: 0 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10000;
+            backdrop-filter: blur(18px);
+            background: var(--nav-bg);
+            border-radius: 25px;
+            border: 1px solid var(--nav-border);
+            transition: height 0.5s var(--spring-easing), border-radius 0.5s var(--spring-easing);
+        }
+
+        nav.menu-open {
+            height: calc(100vh - 40px);
+            border-radius: 25px;
+        }
+
+        .nav-header {
+            width: 100%;
+            height: 76px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            padding: 0 30px;
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 1.5rem;
+            letter-spacing: -1px;
+            color: var(--nav-text);
+            transition: color 0.3s;
+        }
+
+        .nav-desktop {
+            display: flex;
+            gap: 12px;
+            list-style: none;
+        }
+
+        .nav-desktop .nav-div-btn {
+            color: var(--nav-text);
+            font-weight: 700;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 10px 20px;
+            border-radius: 25px;
+            background: var(--nav-btn-bg);
+            transition: all 0.3s var(--spring-easing);
+        }
+
+        .nav-desktop .nav-div-btn:hover {
+            color: var(--nav-text-hover);
+            background: var(--nav-text);
+        }
+
+        .nav-desktop .nav-div-btn.page-active,
+        .fs-menu-content ul li .nav-div-btn.page-active {
+            color: var(--nav-text-hover);
+            background: var(--nav-text);
+            pointer-events: none;
+        }
+
+        .burger-btn {
+            background: none;
+            color: var(--nav-text);
+            width: 46px;
+            height: 46px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.4s var(--spring-easing);
+        }
+
+        .burger-btn span {
+            font-size: 2rem;
+        }
+
+        .burger-btn.active {
+            transform: rotate(90deg);
+        }
+
+        .fs-menu-content {
+            position: absolute;
+            top: 90px;
+            left: 0;
+            width: 100%;
+            height: calc(100% - 110px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: opacity 0.3s var(--spring-easing), transform 0.3s var(--spring-easing), visibility 0.3s;
+        }
+
+        nav.menu-open .fs-menu-content {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+            transition: opacity 0.4s var(--spring-easing) 0.2s, transform 0.4s var(--spring-easing) 0.2s, visibility 0.4s;
+        }
+
+        .fs-menu-content ul {
+            list-style: none;
+            text-align: center;
+            width: 100%;
+            padding: 0 30px;
+        }
+
+        .fs-menu-content ul li {
+            margin: 15px 0;
+        }
+
+        .fs-menu-content ul li .nav-div-btn {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--nav-text);
+            display: block;
+            padding: 15px;
+            border-radius: 25px;
+            letter-spacing: -1px;
+            background: var(--nav-btn-bg);
+            transition: all 0.3s;
+        }
+
+        .fs-menu-content ul li .nav-div-btn:hover {
+            background: var(--nav-text);
+            color: var(--nav-text-hover);
+        }
+
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 0 10%;
+            background: 
+                linear-gradient(to bottom, var(--hero-overlay-start) 0%, var(--hero-overlay-end) 100%),
+                url('https://netherixstudios.com/wp-content/uploads/2025/02/Build-minecraft-homepage-netherix.webp');
+            background-size: cover;
+            background-position: center;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: clamp(3rem, 10vw, 6.5rem);
+            font-weight: 800;
+            line-height: 0.95;
+            margin-bottom: 25px;
+            letter-spacing: 1px;
+        }
+
+        .hero h1 span { color: var(--accent-primary); }
+
+        .hero-btns {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn-vibrant {
+            background: var(--accent-primary);
+            color: var(--bg-dark);
+            padding: 22px 48px;
+            border-radius: 100px;
+            font-weight: 800;
+            width: fit-content;
+            transition: all 0.4s var(--bounce-easing);
+            display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+        }
+
+        .btn-outline {
+            background: var(--btn-outline-bg);
+            color: var(--text-main);
+            border: 2px solid var(--accent-primary);
+            padding: 22px 48px;
+            border-radius: 100px;
+            font-weight: 800;
+            width: fit-content;
+            transition: all 0.4s var(--bounce-easing);
+            display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+            backdrop-filter: blur(5px);
+        }
+
+        .btn-vibrant:hover, .btn-outline:hover { transform: scale(0.98) }
+        .btn-outline:hover { background: var(--accent-primary); color: var(--bg-dark); }
+
+        .marquee-transition-block {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            overflow: hidden;
+            z-index: 10;
+        }
+
+        .marquee-row {
+            width: 100%;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .hero-to-content .row-top {
+            background: #141418;
+        }
+
+        .hero-to-content .row-bottom {
+            background: var(--bg-dark);
+        }
+
+        .content-to-footer .row-top {
+            background: var(--bg-dark);
+        }
+
+        .content-to-footer .row-bottom {
+            background: var(--accent-primary);
+        }
+
+        .marquee-track {
+            display: flex;
+            width: max-content;
+            align-items: center;
+        }
+
+        .track-left {
+            animation: scrollLeft 32s linear infinite;
+        }
+
+        .track-right {
+            animation: scrollRight 32s linear infinite;
+        }
+
+        .marquee-item {
+            font-size: 1.5rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            padding: 0 20px;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+
+        .hero-to-content .row-top .marquee-item {
+            color: var(--accent-primary);
+        }
+
+        .hero-to-content .row-bottom .marquee-item {
+            color: #ffffff;
+        }
+
+        .content-to-footer .row-top .marquee-item {
+            color: var(--accent-primary);
+        }
+
+        .content-to-footer .row-bottom .marquee-item {
+            color: var(--bg-dark);
+        }
+
+        @keyframes scrollLeft {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-33.333%); }
+        }
+
+        @keyframes scrollRight {
+            0% { transform: translateX(-33.333%); }
+            100% { transform: translateX(0); }
+        }
+
+        .section { padding: 120px 10%; }
+        
+        .section-header { margin-bottom: 60px; text-align: center; }
+        .section-header h2 { margin-top: 10px; font-size: 3.5rem; font-weight: 800; letter-spacing: -2px; }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .product-card {
+            background: var(--surface);
+            border-radius: 30px;
+            overflow: hidden;
+            position: relative;
+            transition: all 0.5s var(--spring-easing);
+            border: 1px solid var(--card-border);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-img {
+            height: 220px;
+            background: linear-gradient(180deg, var(--card-img-start) 0%, var(--surface) 100%);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.5s;
+        }
+
+        .product-details { 
+            padding: 30px; 
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .product-details h3 { font-size: 1.5rem; margin-bottom: 8px; font-weight: 800; letter-spacing: -1px; }
+        
+        .btn-catalog {
+            background: var(--accent-primary);
+            color: var(--bg-dark);
+            padding: 18px 30px;
+            border-radius: 100px;
+            font-weight: 800;
+            transition: all 0.4s var(--bounce-easing);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.8rem;
+            margin-top: auto;
+            width: 100%;
+        }
+
+        .btn-catalog:hover { transform: scale(0.97); opacity: 0.9; }
+
+        .faq-item {
+            background: var(--surface);
+            margin-bottom: 15px;
+            border-radius: 25px;
+        }
+        .faq-q { padding: 25px 30px; display: flex; justify-content: space-between; font-weight: 600; }
+        .faq-a { padding: 0 30px; max-height: 0; overflow: hidden; transition: 0.5s var(--spring-easing); color: var(--text-dim); line-height: 1.6; }
+        .faq-item.active .faq-a { padding-bottom: 25px; max-height: 300px; }
+
+        footer {
+            padding: 80px 10% 40px;
+            background: var(--accent-primary);
+            color: var(--bg-dark);
+        }
+
+        .footer-minimal {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 40px;
+        }
+
+        .footer-links { display: flex; gap: 60px; }
+        .footer-link-group ul { list-style: none; }
+        .footer-link-group ul li { margin-bottom: 12px; }
+        .footer-link-group ul li .footer-div-link {
+            color: var(--bg-dark);
+            font-size: 0.9rem;
+            opacity: 0.7;
+            transition: 0.3s;
+            font-weight: 600;
+        }
+        .footer-link-group ul li .footer-div-link:hover { opacity: 1; text-decoration: underline; }
+
+        @media (max-width: 1024px) {
+            .nav-desktop { display: none; }
+            .burger-btn { display: flex; }
+        }
+
+        @media (max-width: 768px) {
+            nav { top: 15px; width: calc(100% - 30px); height: 66px; }
+            nav.menu-open { height: calc(50vh - 30px); }
+            .nav-header { height: 66px; padding: 0 20px; }
+            .fs-menu-content { top: 80px; height: calc(100% - 100px); }
+            .section { padding: 80px 20px; }
+            .footer-links { gap: 30px; width: 100%; justify-content: space-between; }
+
+            .product-grid {
+                display: flex;
+                overflow-x: auto;
+                scroll-snap-type: x mandatory;
+                gap: 15px;
+                padding: 10px 0 30px;
+                scrollbar-width: none;
+            }
+
+            .product-grid::-webkit-scrollbar { display: none; }
+            .product-card { min-width: 85%; scroll-snap-align: center; }
+            .section-header { text-align: left; }
+            .section-header h2 { font-size: 2.8rem; }
+            .hero-btns { flex-direction: column; }
+            .btn-vibrant, .btn-outline { width: 100%; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav id="mainNav">
+        <div class="nav-header">
+            <div class="logo">MINEPLIX.</div>
+            
+            <ul class="nav-desktop">
+                <li><div class="nav-div-btn page-active" onclick="location.href='#'">BERANDA</div></li>
+                <li><div class="nav-div-btn" onclick="location.href='bantuan.html'">BANTUAN</div></li>
+            </ul>
+
+            <button class="burger-btn" id="burgerBtn">
+                <span class="material-symbols-rounded" id="burgerIcon">menu</span>
+            </button>
+        </div>
+
+        <div class="fs-menu-content">
+            <ul>
+                <li><div class="nav-div-btn page-active" onclick="location.href='#'">BERANDA</div></li>
+                <li><div class="nav-div-btn" onclick="location.href='bantuan.html'">BANTUAN</div></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="hero" id="home">
+        <h1 class="reveal">CRAFTING<br><span>IMMERSIVE</span> REALMS.</h1>
+        <p class="reveal" style="color: var(--text-dim); margin-bottom: 40px; max-width: 650px; font-size: 1.2rem; line-height: 1.6; text-shadow: 0 2px 10px rgba(0,0,0,0.8);">
+            MINEPLIX adalah studio kreatif garis depan yang menggabungkan arsitektur voxel tingkat lanjut dengan desain visual modern. Kami mengubah server Anda menjadi sebuah dunia yang memiliki jiwa.
+        </p>
+        <div class="hero-btns reveal">
+            <div onclick="location.href='/porto.html'" class="btn-vibrant">Portofolio</div>
+            <div onclick="location.href='/hireus.html'" class="btn-outline">Hire Us</div>
+        </div>
+    </section>
+
+    <div class="marquee-transition-block hero-to-content reveal">
+        <div class="marquee-row row-top">
+            <div class="marquee-track track-left">
+                <div class="marquee-item">Minecraft Builder</div>
+                <div class="marquee-item">Skin Custom</div>
+                <div class="marquee-item">Addon Developer</div>
+                <div class="marquee-item">Resource Pack</div>
+                <div class="marquee-item">3D Modeling</div>
+                <div class="marquee-item">Minecraft Builder</div>
+                <div class="marquee-item">Skin Custom</div>
+                <div class="marquee-item">Addon Developer</div>
+                <div class="marquee-item">Resource Pack</div>
+                <div class="marquee-item">3D Modeling</div>
+                <div class="marquee-item">Minecraft Builder</div>
+                <div class="marquee-item">Skin Custom</div>
+                <div class="marquee-item">Addon Developer</div>
+                <div class="marquee-item">Resource Pack</div>
+                <div class="marquee-item">3D Modeling</div>
+            </div>
+        </div>
+        <div class="marquee-row row-bottom">
+            <div class="marquee-track track-right">
+                <div class="marquee-item">Pixel Art</div>
+                <div class="marquee-item">Voxel Architecture</div>
+                <div class="marquee-item">Custom UI/UX</div>
+                <div class="marquee-item">Server Setup</div>
+                <div class="marquee-item">Digital Studio</div>
+                <div class="marquee-item">Pixel Art</div>
+                <div class="marquee-item">Voxel Architecture</div>
+                <div class="marquee-item">Custom UI/UX</div>
+                <div class="marquee-item">Server Setup</div>
+                <div class="marquee-item">Digital Studio</div>
+                <div class="marquee-item">Pixel Art</div>
+                <div class="marquee-item">Voxel Architecture</div>
+                <div class="marquee-item">Custom UI/UX</div>
+                <div class="marquee-item">Server Setup</div>
+                <div class="marquee-item">Digital Studio</div>
+            </div>
+        </div>
+    </div>
+
+    <section class="section" id="products">
+        <div class="section-header reveal">
+            <h2>STORE CATEGORY</h2>
+            <p style="color: var(--text-dim); margin-top: 10px;">Layanan profesional untuk kebutuhan digital Anda.</p>
+        </div>
+        
+        <div class="product-grid">
+            <div class="product-card reveal">
+                <div class="product-img">
+                    <span class="material-symbols-rounded" style="font-size: 60px; opacity: 0.1;">fort</span>
+                </div>
+                <div class="product-details">
+                    <h3>Minecraft Builder</h3>
+                    <p style="color: var(--text-dim); font-size: 0.85rem; margin-bottom: 25px;">Lobby, Spawns, RPG Maps, & Terraforming tingkat tinggi.</p>
+                    <div onclick="location.href='katalogb.html'" class="btn-catalog">
+                        Lihat Katalog <span class="material-symbols-rounded">arrow_forward</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card reveal">
+                <div class="product-img">
+                    <span class="material-symbols-rounded" style="font-size: 60px; opacity: 0.1;">brush</span>
+                </div>
+                <div class="product-details">
+                    <h3>2D & Pixel Art</h3>
+                    <p style="color: var(--text-dim); font-size: 0.85rem; margin-bottom: 25px;">Custom UI/UX, Server Logo, & Pixelated Items/Textures.</p>
+                    <div onclick="location.href='produk.html#design'" class="btn-catalog">
+                        Lihat Katalog <span class="material-symbols-rounded">arrow_forward</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card reveal">
+                <div class="product-img">
+                    <span class="material-symbols-rounded" style="font-size: 60px; opacity: 0.1;">view_in_ar</span>
+                </div>
+                <div class="product-details">
+                    <h3>3D Modeling</h3>
+                    <p style="color: var(--text-dim); font-size: 0.85rem; margin-bottom: 25px;">Custom Entity, Furniture, & Assets untuk Java/Bedrock.</p>
+                    <div onclick="location.href='produk.html#3dmodeling'" class="btn-catalog">
+                        Lihat Katalog <span class="material-symbols-rounded">arrow_forward</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="faq">
+        <h2 class="reveal" style="font-size: 3.5rem; margin-bottom: 60px; text-align: center; font-weight: 800; letter-spacing: -2px;">Panduan & Pertanyaan</h2>
+        <div class="faq-container reveal" style="max-width: 900px; margin: 0 auto;">
+            <div class="faq-item">
+                <div class="faq-q">Apa perbedaan paket 'Custom Build'? <span class="material-symbols-rounded">add</span></div>
+                <div class="faq-a">Custom Build dirancang eksklusif hanya untuk Anda sesuai permintaan spesifik, sementara Ready-to-Use adalah katalog map non-eksklusif.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q">Apakah model 3D support Bedrock? <span class="material-symbols-rounded">add</span></div>
+                <div class="faq-a">Ya, model 3D kami dioptimalkan untuk Java Edition maupun Bedrock Edition.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q">Bagaimana sistem pembayarannya? <span class="material-symbols-rounded">add</span></div>
+                <div class="faq-a">Kami menggunakan sistem DP 50% di awal dan pelunasan dilakukan setelah hasil final divalidasi oleh klien.</div>
+            </div>
+        </div>
+    </section>
+
+    <div class="marquee-transition-block content-to-footer reveal">
+        <div class="marquee-row row-top">
+            <div class="marquee-track track-left">
+                <div class="marquee-item">Minecraft Builder</div>
+                <div class="marquee-item">Skin Custom</div>
+                <div class="marquee-item">Addon Developer</div>
+                <div class="marquee-item">Resource Pack</div>
+                <div class="marquee-item">3D Modeling</div>
+                <div class="marquee-item">Minecraft Builder</div>
+                <div class="marquee-item">Skin Custom</div>
+                <div class="marquee-item">Addon Developer</div>
+                <div class="marquee-item">Resource Pack</div>
+                <div class="marquee-item">3D Modeling</div>
+                <div class="marquee-item">Minecraft Builder</div>
+                <div class="marquee-item">Skin Custom</div>
+                <div class="marquee-item">Addon Developer</div>
+                <div class="marquee-item">Resource Pack</div>
+                <div class="marquee-item">3D Modeling</div>
+            </div>
+        </div>
+        <div class="marquee-row row-bottom">
+            <div class="marquee-track track-right">
+                <div class="marquee-item">Pixel Art</div>
+                <div class="marquee-item">Voxel Architecture</div>
+                <div class="marquee-item">Custom UI/UX</div>
+                <div class="marquee-item">Server Setup</div>
+                <div class="marquee-item">Digital Studio</div>
+                <div class="marquee-item">Pixel Art</div>
+                <div class="marquee-item">Voxel Architecture</div>
+                <div class="marquee-item">Custom UI/UX</div>
+                <div class="marquee-item">Server Setup</div>
+                <div class="marquee-item">Digital Studio</div>
+                <div class="marquee-item">Pixel Art</div>
+                <div class="marquee-item">Voxel Architecture</div>
+                <div class="marquee-item">Custom UI/UX</div>
+                <div class="marquee-item">Server Setup</div>
+                <div class="marquee-item">Digital Studio</div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-minimal reveal">
+            <div class="footer-brand">
+                <h2 style="color: var(--bg-dark);">MINEPLIX.</h2>
+                <p style="font-size: 0.85rem; margin-top: 10px;">Architects of the Voxel World.</p>
+                <p style="font-size: 0.75rem; margin-top: 5px;">&copy; 2026 MINEPLIX Studio.</p>
+            </div>
+            <div class="footer-links">
+                <div class="footer-link-group">
+                    <h4 style="margin-bottom: 15px; font-size: 1rem;">About more</h4>
+                    <ul>
+                        <li><div class="footer-div-link" onclick="location.href='porto.html'">Portofolio</div></li>
+                        <li><div class="footer-div-link" onclick="location.href='wiki.html'">Informasi layanan tos</div></li>
+                    </ul>
+                </div>
+                <div class="footer-link-group">
+                    <h4 style="margin-bottom: 15px; font-size: 1rem;">Media</h4>
+                    <ul>
+                        <li><div class="footer-div-link" onclick="window.open('https://discord.gg/SUqrcFYyYE', '_blank')">Discord</div></li>
+                        <li><div class="footer-div-link" onclick="window.open('https://www.instagram.com/mineplix.id?igsh=d2pxeHRlb3NmYzE=', '_blank')">Instagram</div></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const burgerBtn = document.getElementById('burgerBtn');
+        const burgerIcon = document.getElementById('burgerIcon');
+        const mainNav = document.getElementById('mainNav');
+
+        function setMenuState(isOpen) {
+            if (isOpen) {
+                mainNav.classList.add('menu-open');
+                burgerBtn.classList.add('active');
+                burgerIcon.textContent = 'close';
+                document.body.style.overflow = 'hidden';
+            } else {
+                mainNav.classList.remove('menu-open');
+                burgerBtn.classList.remove('active');
+                burgerIcon.textContent = 'menu';
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        burgerBtn.addEventListener('click', () => {
+            const isCurrentlyOpen = mainNav.classList.contains('menu-open');
+            
+            if (!isCurrentlyOpen) {
+                history.pushState({ menuOpen: true }, '', '#menu');
+                setMenuState(true);
+            } else {
+                history.back();
+            }
+        });
+
+        window.addEventListener('popstate', (event) => {
+            if (event.state && event.state.menuOpen) {
+                setMenuState(true);
+            } else {
+                setMenuState(false);
+            }
+        });
+
+        document.querySelectorAll('.fs-menu-content .nav-div-btn').forEach(link => {
+            link.addEventListener('click', () => {
+                if (mainNav.classList.contains('menu-open')) {
+                    history.back();
+                }
+            });
+        });
+
+        document.querySelectorAll('.faq-q').forEach(q => {
+            q.addEventListener('click', () => {
+                const item = q.parentElement;
+                const isActive = item.classList.contains('active');
+                
+                document.querySelectorAll('.faq-item').forEach(el => el.classList.remove('active'));
+                document.querySelectorAll('.faq-q .material-symbols-rounded').forEach(el => el.textContent = 'add');
+
+                if (!isActive) {
+                    item.classList.add('active');
+                    q.querySelector('.material-symbols-rounded').textContent = 'remove';
+                }
+            });
+        });
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>

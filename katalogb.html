@@ -1,0 +1,1406 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MINEPLIX | Minecraft Builder Catalog</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+
+    <style>
+        :root {
+            --bg-dark: #0f0f12;
+            --surface: #1a1a1e;
+            --accent-primary: #c3f25d; 
+            --accent-secondary: #ff8e9e; 
+            --accent-tertiary: #7d6aff; 
+            --text-main: #ffffff;
+            --text-dim: #b0b0b0;
+            --spring-easing: cubic-bezier(0.25, 1, 0.5, 1);
+            --bounce-easing: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --nav-bg: #c3f25d;
+            --nav-text: #0f0f12;
+            --nav-text-hover: #ffffff;
+            --nav-btn-bg: rgba(15, 15, 18, 0.08);
+            --nav-btn-hover: rgba(15, 15, 18, 0.2);
+            --nav-border: rgba(195, 242, 93, 0.2);
+            --hero-overlay-start: rgba(15, 15, 18, 0.8);
+            --hero-overlay-end: rgba(15, 15, 18, 0.95);
+            --btn-outline-bg: rgba(15, 15, 18, 0.5);
+            --card-border: rgba(255, 255, 255, 0.03);
+            --card-img-start: #252529;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            overflow-x: hidden;
+            user-select: none;
+        }
+
+        button {
+            border: none;
+            outline: none;
+        }
+
+        button:focus {
+            border: none;
+            outline: none;
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s var(--spring-easing), transform 0.6s var(--spring-easing);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .catalog-card.card-loaded {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: cardFadeIn 0.5s var(--spring-easing) forwards;
+        }
+
+        @keyframes cardFadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        nav {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 40px);
+            max-width: 1300px;
+            height: 76px;
+            padding: 0 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10000;
+            background: var(--nav-bg);
+            border-radius: 25px;
+            border: 1px solid var(--nav-border);
+            transition: height 0.5s var(--spring-easing), border-radius 0.5s var(--spring-easing);
+        }
+
+        nav.menu-open {
+            height: calc(100vh - 40px);
+            border-radius: 25px;
+        }
+
+        .nav-header {
+            width: 100%;
+            height: 76px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            padding: 0 30px;
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 1.5rem;
+            letter-spacing: -1px;
+            color: var(--nav-text);
+            transition: color 0.3s;
+        }
+
+        .nav-desktop {
+            display: flex;
+            gap: 12px;
+            list-style: none;
+        }
+
+        .nav-desktop .nav-div-btn {
+            color: var(--nav-text);
+            font-weight: 700;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 10px 20px;
+            border-radius: 25px;
+            background: var(--nav-btn-bg);
+            transition: all 0.3s var(--spring-easing);
+        }
+
+        .nav-desktop .nav-div-btn:hover {
+            color: var(--nav-text-hover);
+            background: var(--nav-text);
+        }
+
+        .nav-desktop .nav-div-btn.page-active,
+        .fs-menu-content ul li .nav-div-btn.page-active {
+            color: var(--nav-text-hover);
+            background: var(--nav-text);
+            pointer-events: none;
+        }
+
+        .burger-btn {
+            background: none;
+            color: var(--nav-text);
+            width: 46px;
+            height: 46px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.4s var(--spring-easing);
+        }
+
+        .burger-btn span {
+            font-size: 2rem;
+        }
+
+        .burger-btn.active {
+            transform: rotate(90deg);
+        }
+
+        .fs-menu-content {
+            position: absolute;
+            top: 90px;
+            left: 0;
+            width: 100%;
+            height: calc(100% - 110px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: opacity 0.3s var(--spring-easing), transform 0.3s var(--spring-easing), visibility 0.3s;
+        }
+
+        nav.menu-open .fs-menu-content {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+            transition: opacity 0.4s var(--spring-easing) 0.2s, transform 0.4s var(--spring-easing) 0.2s, visibility 0.4s;
+        }
+
+        .fs-menu-content ul {
+            list-style: none;
+            text-align: center;
+            width: 100%;
+            padding: 0 30px;
+        }
+
+        .fs-menu-content ul li {
+            margin: 15px 0;
+        }
+
+        .fs-menu-content ul li .nav-div-btn {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--nav-text);
+            display: block;
+            padding: 15px;
+            border-radius: 25px;
+            letter-spacing: -1px;
+            background: var(--nav-btn-bg);
+            transition: all 0.3s;
+        }
+
+        .fs-menu-content ul li .nav-div-btn:hover {
+            background: var(--nav-text);
+            color: var(--nav-text-hover);
+        }
+
+        .page-header {
+            padding: 160px 10% 0;
+            background: linear-gradient(to bottom, rgba(15,15,18,0.6) 0%, var(--bg-dark) 100%),
+                url('https://netherixstudios.com/wp-content/uploads/2025/02/Build-minecraft-homepage-netherix.webp');
+            background-size: cover;
+            background-position: center top;
+        }
+
+        .page-header h1 {
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            font-weight: 800;
+            letter-spacing: -2px;
+            line-height: 1;
+        }
+
+        .page-header h1 span { color: var(--accent-primary); }
+
+        .page-header p {
+            color: var(--text-dim);
+            margin-top: 15px;
+            font-size: 1.1rem;
+            max-width: 550px;
+            line-height: 1.6;
+        }
+
+        .catalog-section {
+            padding: 40px 10% 120px;
+        }
+
+        .catalog-label {
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent-primary);
+            margin-bottom: 20px;
+        }
+
+        .catalog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+            margin-bottom: 60px;
+        }
+
+        .catalog-card {
+            background: var(--surface);
+            border-radius: 28px;
+            overflow: hidden;
+            border: 1px solid var(--card-border);
+            transition: all 0.4s var(--spring-easing);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .catalog-card:hover {
+            border-color: rgba(195, 242, 93, 0.2);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        }
+
+        .card-img {
+            height: 200px;
+            background: linear-gradient(135deg, var(--card-img-start) 0%, #1e1e22 100%);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .card-img .icon-bg {
+            font-size: 80px;
+            opacity: 0.07;
+            position: absolute;
+        }
+
+        .card-type-chip {
+            position: absolute;
+            bottom: 14px;
+            right: 14px;
+            padding: 4px 10px;
+            border-radius: 100px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: rgba(255,255,255,0.08);
+            color: var(--text-dim);
+        }
+
+        .card-preview-icon {
+            font-size: 48px;
+            color: var(--accent-primary);
+            opacity: 0.6;
+            z-index: 1;
+            transition: 0.4s var(--bounce-easing);
+        }
+
+        .catalog-card:hover .card-preview-icon {
+            opacity: 1;
+            transform: scale(1.15);
+        }
+
+        .card-body {
+            padding: 24px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-body h3 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
+        }
+
+        .card-body .card-desc {
+            color: var(--text-dim);
+            font-size: 0.82rem;
+            line-height: 1.55;
+            margin-bottom: 16px;
+        }
+
+        .card-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 20px;
+        }
+
+        .card-feature-tag {
+            padding: 4px 10px;
+            border-radius: 100px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            background: rgba(255,255,255,0.05);
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: auto;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .card-price {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--accent-primary);
+            letter-spacing: -0.5px;
+        }
+
+        .card-price span {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            margin-left: 2px;
+        }
+
+        .btn-order {
+            background: var(--accent-primary);
+            color: var(--bg-dark);
+            padding: 10px 20px;
+            border-radius: 100px;
+            font-weight: 800;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.4s var(--bounce-easing);
+        }
+
+        .btn-order:hover { transform: scale(0.95); opacity: 0.9; }
+        .btn-order .material-symbols-rounded { font-size: 16px; }
+
+        .section-divider {
+            height: 1px;
+            background: rgba(255,255,255,0.06);
+            margin: 0 10% 60px;
+        }
+
+        .custom-section {
+            padding: 0 10% 120px;
+        }
+
+        .custom-box {
+            background: var(--surface);
+            border-radius: 36px;
+            padding: 60px;
+            border: 1px solid rgba(195, 242, 93, 0.12);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .custom-box::before {
+            content: '';
+            position: absolute;
+            top: -80px;
+            right: -80px;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(195, 242, 93, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .custom-box-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .custom-box-header h2 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            line-height: 1.1;
+        }
+
+        .custom-box-header p {
+            color: var(--text-dim);
+            margin-top: 8px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .custom-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-dim);
+        }
+
+        .form-control {
+            background: rgba(255,255,255,0.04);
+            border: 1.5px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 14px 18px;
+            color: var(--text-main);
+            font-size: 0.9rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 500;
+            transition: border-color 0.3s var(--spring-easing), background-color 0.3s var(--spring-easing), box-shadow 0.3s var(--spring-easing);
+            outline: none;
+            width: 100%;
+        }
+
+        .form-control:focus {
+            border-color: var(--accent-primary);
+            background-color: rgba(195, 242, 93, 0.04);
+            box-shadow: 0 0 0 4px rgba(195, 242, 93, 0.08);
+        }
+
+        select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23b0b0b0' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            padding-right: 44px;
+            transition: border-color 0.3s var(--spring-easing), box-shadow 0.3s var(--spring-easing);
+        }
+
+        select.form-control option {
+            background: #1a1a1e;
+            color: #fff;
+        }
+
+        .pill-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .pill-check {
+            display: none;
+        }
+
+        .pill-label {
+            padding: 8px 16px;
+            border-radius: 100px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            border: 1.5px solid rgba(255,255,255,0.1);
+            color: var(--text-dim);
+            transition: all 0.3s var(--spring-easing);
+            user-select: none;
+        }
+
+        .pill-check:checked + .pill-label {
+            background: rgba(195, 242, 93, 0.12);
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+        }
+
+        .pill-label:hover {
+            border-color: rgba(195, 242, 93, 0.4);
+            color: rgba(195, 242, 93, 0.7);
+        }
+
+        .form-submit-row {
+            grid-column: 1 / -1;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .btn-submit {
+            background: var(--accent-primary);
+            color: var(--bg-dark);
+            padding: 18px 44px;
+            border-radius: 100px;
+            font-weight: 800;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.4s var(--bounce-easing);
+            flex-shrink: 0;
+        }
+
+        .btn-submit:hover { transform: scale(0.97); }
+
+        .btn-submit:disabled, .btn-modal-submit:disabled {
+            background: #2a2a30 !important;
+            color: var(--text-dim) !important;
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .form-note {
+            font-size: 0.78rem;
+            color: var(--text-dim);
+            line-height: 1.5;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translate(-50%, 30px);
+            background: #fff;
+            color: #16161a;
+            padding: 14px 24px;
+            border-radius: 100px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 99999;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s var(--spring-easing), transform 0.4s var(--spring-easing), visibility 0.4s;
+        }
+
+        .toast.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, 0);
+        }
+
+        .toast .toast-icon {
+            font-size: 20px;
+        }
+
+        .marquee-transition-block {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            overflow: hidden;
+            z-index: 10;
+        }
+
+        .marquee-row {
+            width: 100%;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .content-to-footer .row-top { background: var(--bg-dark); }
+        .content-to-footer .row-bottom { background: var(--accent-primary); }
+
+        .marquee-track {
+            display: flex;
+            width: max-content;
+            align-items: center;
+        }
+
+        .track-left { animation: scrollLeft 32s linear infinite; }
+        .track-right { animation: scrollRight 32s linear infinite; }
+
+        .marquee-item {
+            font-size: 1.5rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            padding: 0 20px;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+
+        .content-to-footer .row-top .marquee-item { color: var(--accent-primary); }
+        .content-to-footer .row-bottom .marquee-item { color: var(--bg-dark); }
+
+        @keyframes scrollLeft {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-33.333%); }
+        }
+
+        @keyframes scrollRight {
+            0% { transform: translateX(-33.333%); }
+            100% { transform: translateX(0); }
+        }
+
+        footer {
+            padding: 80px 10% 40px;
+            background: var(--accent-primary);
+            color: var(--bg-dark);
+        }
+
+        .footer-minimal {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 40px;
+        }
+
+        .footer-links { display: flex; gap: 60px; }
+        .footer-link-group ul { list-style: none; }
+        .footer-link-group ul li { margin-bottom: 12px; }
+        .footer-link-group ul li .footer-div-link {
+            color: var(--bg-dark);
+            font-size: 0.9rem;
+            opacity: 0.7;
+            transition: 0.3s;
+            font-weight: 600;
+        }
+        .footer-link-group ul li .footer-div-link:hover { opacity: 1; text-decoration: underline; }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(7, 7, 9, 0.6);
+            z-index: 99998;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            padding: 20px;
+            transition: opacity 0.35s ease, visibility 0.35s ease;
+            will-change: opacity, visibility;
+        }
+
+        .modal-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-box {
+            background: var(--surface);
+            border-radius: 32px;
+            padding: 35px 40px;
+            max-width: 520px;
+            width: 100%;
+            border: 1px solid rgba(195, 242, 93, 0.15);
+            transform: scale(0.95) translateY(10px);
+            opacity: 0;
+            transition: transform 0.35s var(--spring-easing), opacity 0.35s var(--spring-easing);
+            will-change: transform, opacity;
+        }
+
+        .modal-overlay.open .modal-box {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+
+        .modal-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 6px;
+        }
+
+        .modal-title span { color: var(--accent-primary); }
+
+        .modal-subtitle {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        .modal-product-info {
+            background: rgba(195, 242, 93, 0.06);
+            border: 1px solid rgba(195, 242, 93, 0.12);
+            border-radius: 16px;
+            padding: 14px 20px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .modal-product-name {
+            font-size: 0.95rem;
+        }
+
+        .modal-product-price {
+            font-size: 1.1rem;
+            color: var(--accent-primary);
+        }
+
+        .modal-form { display: flex; flex-direction: column; gap: 16px; }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn-modal-cancel {
+            background: rgba(255,255,255,0.06);
+            color: var(--text-dim);
+            padding: 12px 20px;
+            border-radius: 100px;
+            font-weight: 700;
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            flex: 1;
+            transition: all 0.3s;
+        }
+
+        .btn-modal-cancel:hover {
+            background: rgba(255,255,255,0.1);
+            color: var(--text-main);
+        }
+
+        .btn-modal-submit {
+            background: var(--accent-primary);
+            color: var(--bg-dark);
+            padding: 12px 20px;
+            border-radius: 100px;
+            font-weight: 800;
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            flex: 1.5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.4s var(--bounce-easing);
+        }
+
+        .btn-modal-submit:hover { transform: scale(0.97); }
+        .btn-modal-submit .material-symbols-rounded { font-size: 18px; }
+
+        @media (max-width: 1024px) {
+            .nav-desktop { display: none; }
+            .burger-btn { display: flex; }
+        }
+
+        @media (max-width: 768px) {
+            nav { top: 15px; width: calc(100% - 30px); height: 66px; }
+            nav.menu-open { height: calc(50vh - 30px); }
+            .nav-header { height: 66px; padding: 0 20px; }
+            .fs-menu-content { top: 80px; height: calc(100% - 100px); }
+
+            .page-header { padding: 130px 20px 60px; }
+            .catalog-section { padding: 20px 20px 80px; }
+            .custom-section { padding: 0 20px 80px; }
+            .section-divider { margin: 0 20px 40px; }
+
+            .catalog-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .custom-box { padding: 30px 24px; }
+
+            .custom-form {
+                grid-template-columns: 1fr;
+            }
+
+            .custom-box-header {
+                flex-direction: column;
+                gap: 14px;
+            }
+
+            .custom-box-header h2 { font-size: 1.8rem; }
+
+            .form-submit-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .btn-submit { justify-content: center; }
+
+            .footer-links { gap: 30px; width: 100%; justify-content: space-between; }
+            
+            .modal-box {
+                padding: 30px 20px;
+            }
+            .modal-actions {
+                flex-direction: column-reverse;
+                gap: 8px;
+            }
+            .btn-modal-cancel, .btn-modal-submit {
+                flex: none;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav id="mainNav">
+        <div class="nav-header">
+            <div class="logo" onclick="location.href='/'">MINEPLIX.</div>
+            
+            <ul class="nav-desktop">
+                <li><div class="nav-div-btn" onclick="location.href='/'">BERANDA</div></li>
+                <li><div class="nav-div-btn" onclick="location.href='bantuan.html'">BANTUAN</div></li>
+            </ul>
+
+            <button class="burger-btn" id="burgerBtn">
+                <span class="material-symbols-rounded" id="burgerIcon">menu</span>
+            </button>
+        </div>
+
+        <div class="fs-menu-content">
+            <ul>
+                <li><div class="nav-div-btn" onclick="location.href='/'">BERANDA</div></li>
+                <li><div class="nav-div-btn" onclick="location.href='bantuan.html'">BANTUAN</div></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="page-header">
+        <h1 class="reveal">MINECRAFT<br><span>BUILDER</span></h1>
+        <p class="reveal">Dari lobby megah hingga RPG map epik — karya kami hadir dalam berbagai paket siap pesan maupun sepenuhnya custom.</p>
+    </div>
+
+    <section class="catalog-section" id="builder">
+        <p class="catalog-label reveal">Produk Siap Pesan</p>
+        <div class="catalog-grid" id="catalogGrid"></div>
+    </section>
+
+    <div class="section-divider reveal"></div>
+
+    <section class="custom-section">
+        <div class="custom-box reveal">
+            <div class="custom-box-header">
+                <div>
+                    <h2>Custom Build<br><span style="color: var(--accent-primary);">Request</span></h2>
+                    <p>Gambarkan visi Anda dan kami wujudkan. Build eksklusif 100% sesuai permintaan — tidak dijual ke siapapun selain Anda.</p>
+                </div>
+            </div>
+
+            <div class="custom-form" id="customForm">
+
+                <div class="form-group">
+                    <label>Nama / Username<span class="req">*</span></label>
+                    <input type="text" class="form-control" placeholder="e.g. Steve_MC" id="cf-name" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Kontak Utama (WhatsApp / Discord / Email)</label>
+                    <input type="text" class="form-control" placeholder="e.g. 0812xxx / steve#1234 / steve@mail.com" id="cf-contact" required>
+                </div>
+
+                <div class="form-group full">
+                    <label>Jenis Build yang Diinginkan</label>
+                    <div class="pill-group">
+                        <input type="checkbox" class="pill-check" id="p-lobby" value="Lobby"><label class="pill-label" for="p-lobby">Lobby</label>
+                        <input type="checkbox" class="pill-check" id="p-spawn" value="Spawn"><label class="pill-label" for="p-spawn">Spawn</label>
+                        <input type="checkbox" class="pill-check" id="p-rpg" value="RPG Map"><label class="pill-label" for="p-rpg">RPG Map</label>
+                        <input type="checkbox" class="pill-check" id="p-dungeon" value="Dungeon"><label class="pill-label" for="p-dungeon">Dungeon</label>
+                        <input type="checkbox" class="pill-check" id="p-terra" value="Terraforming"><label class="pill-label" for="p-terra">Terraforming</label>
+                        <input type="checkbox" class="pill-check" id="p-minigame" value="Minigame Arena"><label class="pill-label" for="p-minigame">Minigame Arena</label>
+                        <input type="checkbox" class="pill-check" id="p-hub" value="Hub / Network"><label class="pill-label" for="p-hub">Hub / Network</label>
+                        <input type="checkbox" class="pill-check" id="p-other" value="Lainnya"><label class="pill-label" for="p-other">Lainnya</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Platform Target</label>
+                    <select class="form-control" id="cf-platform" required>
+                        <option value="" disabled selected>Pilih platform...</option>
+                        <option value="Java Edition">Java Edition</option>
+                        <option value="Bedrock Edition">Bedrock Edition</option>
+                        <option value="Java & Bedrock">Java & Bedrock</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Estimasi Ukuran Area</label>
+                    <select class="form-control" id="cf-size">
+                        <option value="" disabled selected>Pilih ukuran...</option>
+                        <option value="Kecil (≤200×200)">Kecil (≤200×200)</option>
+                        <option value="Sedang (200–500×500)">Sedang (200–500×500)</option>
+                        <option value="Besar (500–1000×1000)">Besar (500–1000×1000)</option>
+                        <option value="Extra Large (>1000)">Extra Large (>1000)</option>
+                        <option value="Fleksibel / Diskusi">Fleksibel / Diskusi</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Budget Estimasi</label>
+                    <select class="form-control" id="cf-budget">
+                        <option value="" disabled selected>Pilih range...</option>
+                        <option value="Di bawah Rp 200k">Di bawah Rp 200k</option>
+                        <option value="Rp 200k – 500k">Rp 200k – 500k</option>
+                        <option value="Rp 500k – 1 Juta">Rp 500k – 1 Juta</option>
+                        <option value="Di atas Rp 1 Juta">Di atas Rp 1 Juta</option>
+                        <option value="Diskusi">Diskusi</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Tema / Referensi Visual</label>
+                    <input type="text" class="form-control" placeholder="e.g. Medieval fantasy, Cyberpunk, Japanese..." id="cf-theme">
+                </div>
+
+                <div class="form-group full">
+                    <label>Deskripsi Build</label>
+                    <textarea class="form-control" placeholder="Ceritakan visi Anda sedetail mungkin — tema, fungsi, elemen penting, mood yang ingin dicapai, dsb." id="cf-desc" required></textarea>
+                </div>
+
+                <div class="form-submit-row">
+                    <button class="btn-submit" id="btnSubmitCustom" onclick="submitCustomForm()">
+                        <span class="material-symbols-rounded">send</span>
+                        Kirim Request
+                    </button>
+                    <p class="form-note">Tim kami akan menghubungi Anda via WhatsApp/Discord/Email dalam 1×24 jam untuk konfirmasi & estimasi harga.</p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <div class="marquee-transition-block content-to-footer reveal">
+        <div class="marquee-row row-top">
+            <div class="marquee-track track-left">
+                <div class="marquee-item">Minecraft Builder</div>
+                <div class="marquee-item">Skin Custom</div>
+                <div class="marquee-item">Addon Developer</div>
+                <div class="marquee-item">Resource Pack</div>
+                <div class="marquee-item">3D Modeling</div>
+                <div class="marquee-item">Minecraft Builder</div>
+                <div class="marquee-item">Skin Custom</div>
+                <div class="marquee-item">Addon Developer</div>
+                <div class="marquee-item">Resource Pack</div>
+                <div class="marquee-item">3D Modeling</div>
+                <div class="marquee-item">Minecraft Builder</div>
+                <div class="marquee-item">Skin Custom</div>
+                <div class="marquee-item">Addon Developer</div>
+                <div class="marquee-item">Resource Pack</div>
+                <div class="marquee-item">3D Modeling</div>
+            </div>
+        </div>
+        <div class="marquee-row row-bottom">
+            <div class="marquee-track track-right">
+                <div class="marquee-item">Pixel Art</div>
+                <div class="marquee-item">Voxel Architecture</div>
+                <div class="marquee-item">Custom UI/UX</div>
+                <div class="marquee-item">Server Setup</div>
+                <div class="marquee-item">Digital Studio</div>
+                <div class="marquee-item">Pixel Art</div>
+                <div class="marquee-item">Voxel Architecture</div>
+                <div class="marquee-item">Custom UI/UX</div>
+                <div class="marquee-item">Server Setup</div>
+                <div class="marquee-item">Digital Studio</div>
+                <div class="marquee-item">Pixel Art</div>
+                <div class="marquee-item">Voxel Architecture</div>
+                <div class="marquee-item">Custom UI/UX</div>
+                <div class="marquee-item">Server Setup</div>
+                <div class="marquee-item">Digital Studio</div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-minimal reveal">
+            <div class="footer-brand">
+                <h2 style="color: var(--bg-dark);">MINEPLIX.</h2>
+                <p style="font-size: 0.85rem; margin-top: 10px;">Architects of the Voxel World.</p>
+                <p style="font-size: 0.75rem; margin-top: 5px;">&copy; 2026 MINEPLIX Studio.</p>
+            </div>
+            <div class="footer-links">
+                <div class="footer-link-group">
+                    <h4 style="margin-bottom: 15px; font-size: 1rem;">About more</h4>
+                    <ul>
+                        <li><div class="footer-div-link" onclick="location.href='porto.html'">Portofolio</div></li>
+                        <li><div class="footer-div-link" onclick="location.href='wiki.html'">Informasi layanan tos</div></li>
+                    </ul>
+                </div>
+                <div class="footer-link-group">
+                    <h4 style="margin-bottom: 15px; font-size: 1rem;">Media</h4>
+                    <ul>
+                        <li><div class="footer-div-link" onclick="window.open('https://discord.gg/SUqrcFYyYE', '_blank')">Discord</div></li>
+                        <li><div class="footer-div-link" onclick="window.open('https://www.instagram.com/mineplix.id?igsh=d2pxeHRlb3NmYzE=', '_blank')">Instagram</div></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div class="modal-overlay" id="orderModal">
+        <div class="modal-box">
+            <h2 class="modal-title">Pesan <span id="modalProductName">Produk</span></h2>
+            <p class="modal-subtitle">Isi form singkat ini dan tim kami akan segera menghubungi Anda untuk konfirmasi pesanan.</p>
+
+            <div class="modal-product-info">
+                <span class="modal-product-name" id="modalProductLabel">—</span>
+                <span class="modal-product-price" id="modalProductPrice">—</span>
+            </div>
+
+            <div class="modal-form">
+                <div class="form-group">
+                    <label>Nama / Username</label>
+                    <input type="text" class="form-control" placeholder="Nama atau username Anda" id="m-name" required>
+                </div>
+                <div class="form-group">
+                    <label>Kontak Kontak (WhatsApp / Discord / Email)</label>
+                    <input type="text" class="form-control" placeholder="Untuk konfirmasi & pengiriman" id="m-contact" required>
+                </div>
+                <div class="form-group">
+                    <label>Catatan Tambahan</label>
+                    <textarea class="form-control" style="min-height: 80px;" placeholder="Ada permintaan khusus? Tulis di sini..." id="m-note"></textarea>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-modal-cancel" onclick="closeOrderModal()">Batal</button>
+                <button class="btn-modal-submit" id="btnSubmitOrder" onclick="submitOrder()">
+                    <span class="material-symbols-rounded">check_circle</span>
+                    Konfirmasi
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">
+        <span class="material-symbols-rounded toast-icon" id="toastIcon">check_circle</span>
+        <span id="toastMsg">Request berhasil dikirim!</span>
+    </div>
+
+    <script>
+        const FORMSPREE_URL = "https://formspree.io/f/mlgvljne";
+        const SPAM_COOLDOWN_TIME = 10000; 
+        let lastSubmitTime = 0;
+
+        document.addEventListener("DOMContentLoaded", () => {
+            fetch("products.json")
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Gagal mengambil file json produk.");
+                    }
+                    return response.json();
+                })
+                .then(products => {
+                    renderCatalog(products);
+                })
+                .catch(error => {
+                    console.error("Error data loading:", error);
+                    document.getElementById("catalogGrid").innerHTML = `<p style="color:var(--accent-secondary); grid-column: 1/-1; text-align:center;">Gagal memuat katalog produk. Coba refresh halaman.</p>`;
+                });
+        });
+
+        function renderCatalog(products) {
+            const grid = document.getElementById("catalogGrid");
+            grid.innerHTML = ""; 
+
+            products.forEach((product, index) => {
+                const tagsHTML = product.features.map(tag => `<span class="card-feature-tag">${tag}</span>`).join("");
+                const cardHTML = `
+                    <div class="catalog-card card-loaded" data-category="${product.category}" style="animation-delay: ${index * 80}ms;">
+                        <div class="card-img">
+                            <span class="material-symbols-rounded icon-bg">${product.icon}</span>
+                            <span class="material-symbols-rounded card-preview-icon">${product.icon}</span>
+                            <span class="card-type-chip">${product.chipLabel}</span>
+                        </div>
+                        <div class="card-body">
+                            <h3>${product.title}</h3>
+                            <p class="card-desc">${product.desc}</p>
+                            <div class="card-features">
+                                ${tagsHTML}
+                            </div>
+                            <div class="card-footer">
+                                <div class="card-price">${product.priceDisplay} <span>/ map</span></div>
+                                <button class="btn-order" onclick="openOrderModal('${product.title.replace(/'/g, "\\'")}', '${product.priceRaw}')">
+                                    Order <span class="material-symbols-rounded">shopping_cart</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.insertAdjacentHTML("beforeend", cardHTML);
+            });
+        }
+
+        function isSpamming() {
+            const now = Date.now();
+            if (now - lastSubmitTime < SPAM_COOLDOWN_TIME) {
+                const timeLeft = Math.ceil((SPAM_COOLDOWN_TIME - (now - lastSubmitTime)) / 1000);
+                showToast(`Mohon tunggu ${timeLeft} detik sebelum mengirim lagi.`, true);
+                return true;
+            }
+            return false;
+        }
+
+        function updateLastSubmitTime() {
+            lastSubmitTime = Date.now();
+        }
+
+        const burgerBtn = document.getElementById('burgerBtn');
+        const burgerIcon = document.getElementById('burgerIcon');
+        const mainNav = document.getElementById('mainNav');
+
+        function setMenuState(isOpen) {
+            if (isOpen) {
+                mainNav.classList.add('menu-open');
+                burgerBtn.classList.add('active');
+                burgerIcon.textContent = 'close';
+                document.body.style.overflow = 'hidden';
+            } else {
+                mainNav.classList.remove('menu-open');
+                burgerBtn.classList.remove('active');
+                burgerIcon.textContent = 'menu';
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        burgerBtn.addEventListener('click', () => {
+            const isCurrentlyOpen = mainNav.classList.contains('menu-open');
+            if (!isCurrentlyOpen) {
+                history.pushState({ menuOpen: true }, '', '#menu');
+                setMenuState(true);
+            } else {
+                history.back();
+            }
+        });
+
+        window.addEventListener('popstate', (event) => {
+            if (event.state && event.state.menuOpen) {
+                setMenuState(true);
+            } else {
+                setMenuState(false);
+            }
+        });
+
+        document.querySelectorAll('.fs-menu-content .nav-div-btn').forEach(link => {
+            link.addEventListener('click', () => {
+                if (mainNav.classList.contains('menu-open')) {
+                    history.back();
+                }
+            });
+        });
+
+        const orderModal = document.getElementById('orderModal');
+        let currentSelectedProduct = "";
+        let currentSelectedPrice = "";
+
+        function openOrderModal(name, price) {
+            currentSelectedProduct = name;
+            currentSelectedPrice = price;
+            document.getElementById('modalProductName').textContent = name;
+            document.getElementById('modalProductLabel').textContent = name;
+            document.getElementById('modalProductPrice').textContent = price;
+            document.getElementById('m-name').value = '';
+            document.getElementById('m-contact').value = '';
+            document.getElementById('m-note').value = '';
+            orderModal.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeOrderModal() {
+            orderModal.classList.remove('open');
+            document.body.style.overflow = 'auto';
+        }
+
+        orderModal.addEventListener('click', (e) => {
+            if (e.target === orderModal) closeOrderModal();
+        });
+
+        function submitOrder() {
+            if (isSpamming()) return;
+
+            const name = document.getElementById('m-name').value.trim();
+            const contact = document.getElementById('m-contact').value.trim();
+            const note = document.getElementById('m-note').value.trim();
+            const btnSubmit = document.getElementById('btnSubmitOrder');
+
+            if (!name || !contact) {
+                showToast('Mohon isi nama dan kontak terlebih dahulu!', true);
+                return;
+            }
+
+            btnSubmit.disabled = true;
+            btnSubmit.innerHTML = 'Sending...';
+
+            const formData = {
+                "Tipe Form": "Katalog Order (Siap Pesan)",
+                "Nama / Username": name,
+                "Kontak (WA/Discord/Email)": contact,
+                "Produk Yang Dipesan": currentSelectedProduct,
+                "Harga Produk": currentSelectedPrice,
+                "Catatan Tambahan": note || "-"
+            };
+
+            fetch(FORMSPREE_URL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => {
+                if (response.ok) {
+                    closeOrderModal();
+                    showToast('Pesanan berhasil dikirim!');
+                    updateLastSubmitTime();
+                } else {
+                    showToast('Terjadi kesalahan saat mengirim pesanan.', true);
+                }
+            })
+            .catch(error => {
+                showToast('Gagal terhubung ke server.', true);
+            })
+            .finally(() => {
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = '<span class="material-symbols-rounded">check_circle</span> Konfirmasi';
+            });
+        }
+
+        function submitCustomForm() {
+            if (isSpamming()) return;
+
+            const name = document.getElementById('cf-name').value.trim();
+            const contact = document.getElementById('cf-contact').value.trim();
+            const platform = document.getElementById('cf-platform').value;
+            const size = document.getElementById('cf-size').value;
+            const budget = document.getElementById('cf-budget').value;
+            const theme = document.getElementById('cf-theme').value.trim();
+            const desc = document.getElementById('cf-desc').value.trim();
+            const btnSubmit = document.getElementById('btnSubmitCustom');
+
+            let selectedBuilds = [];
+            document.querySelectorAll('.pill-check:checked').forEach(checkbox => {
+                selectedBuilds.push(checkbox.value);
+            });
+
+            if (!name || !contact || !platform || !desc) {
+                showToast('Mohon lengkapi field yang wajib diisi!', true);
+                return;
+            }
+
+            btnSubmit.disabled = true;
+            btnSubmit.innerHTML = 'Sending...';
+
+            const formData = {
+                "Tipe Form": "Custom Build Request",
+                "Nama / Username": name,
+                "Kontak (WA/Discord/Email)": contact,
+                "Jenis Build": selectedBuilds.length > 0 ? selectedBuilds.join(', ') : 'Tidak ada',
+                "Platform Target": platform,
+                "Estimasi Ukuran": size || 'Diskusi',
+                "Estimasi Budget": budget || 'Diskusi',
+                "Tema / Referensi": theme || '-',
+                "Deskripsi Build": desc
+            };
+
+            fetch(FORMSPREE_URL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => {
+                if (response.ok) {
+                    showToast('Custom request berhasil dikirim!');
+                    updateLastSubmitTime();
+                    
+                    document.getElementById('cf-name').value = '';
+                    document.getElementById('cf-contact').value = '';
+                    document.getElementById('cf-platform').value = '';
+                    document.getElementById('cf-size').value = '';
+                    document.getElementById('cf-budget').value = '';
+                    document.getElementById('cf-theme').value = '';
+                    document.getElementById('cf-desc').value = '';
+                    document.querySelectorAll('.pill-check').forEach(c => c.checked = false);
+                } else {
+                    showToast('Terjadi kesalahan saat mengirim request.', true);
+                }
+            })
+            .catch(error => {
+                showToast('Gagal terhubung ke server.', true);
+            })
+            .finally(() => {
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = '<span class="material-symbols-rounded">send</span> Kirim Request';
+            });
+        }
+
+        let toastTimeout;
+        function showToast(msg, isError = false) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            const toastIcon = document.getElementById('toastIcon');
+            
+            toastMsg.textContent = msg;
+
+            if (isError) {
+                toastIcon.textContent = 'error';
+                toastIcon.style.color = '#ff8e9e';
+            } else {
+                toastIcon.textContent = 'check_circle';
+                toastIcon.style.color = 'var(--accent-primary)';
+            }
+
+            toast.classList.add('show');
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => toast.classList.remove('show'), 4000);
+        }
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>
